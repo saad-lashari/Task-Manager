@@ -14,7 +14,14 @@ class TodoPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: const Text('Todos'),
       ),
-      body: BlocBuilder<TodoBloc, TodoState>(
+      body: BlocConsumer<TodoBloc, TodoState>(
+        listener: (context, state) {
+          if (state is TodoMessage) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is TodoInitial || state is TodoLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -46,17 +53,13 @@ class TodoPage extends StatelessWidget {
                     trailing: PopupMenuButton<String>(
                       offset: const Offset(50, -100),
                       onSelected: (value) async {
-                        if (value == 'edit') {
+                        if (value == 'update') {
                         } else if (value == 'delete') {
                           context.read<TodoBloc>().add(DeleteTodo(todo.id!));
                         }
                       },
                       itemBuilder: (BuildContext context) =>
                           <PopupMenuEntry<String>>[
-                        const PopupMenuItem<String>(
-                          value: 'edit',
-                          child: Text('Edit'),
-                        ),
                         const PopupMenuItem<String>(
                           value: 'update',
                           child: Text('Update'),

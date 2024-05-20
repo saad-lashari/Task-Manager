@@ -15,7 +15,7 @@ class AddToDoScreen extends StatefulWidget {
 
 class _AddToDoScreenState extends State<AddToDoScreen> {
   final todoController = TextEditingController();
-  bool _isCompleted = false; // Initially set to false (Pending)
+  bool _isCompleted = false;
   final authRepository = AuthRepository();
   @override
   void dispose() {
@@ -51,7 +51,14 @@ class _AddToDoScreenState extends State<AddToDoScreen> {
               groupValue: _isCompleted,
               onChanged: (value) => setState(() => _isCompleted = value!),
             ),
-            BlocBuilder<TodoBloc, TodoState>(
+            BlocConsumer<TodoBloc, TodoState>(
+              listener: (context, state) {
+                if (state is TodoMessage) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message)),
+                  );
+                }
+              },
               builder: (context, state) {
                 if (state is TodoLoading) {
                   return const CircularProgressIndicator();
